@@ -18,12 +18,12 @@ def main():
 
     if args.reset:
         print("😎, Clearing the database")
-        # clear_database()
+        clear_database()
 
     # create or update the datastore
-    # documents = load_documents()
-    # chunks = split_documents(documents)
-    # add_to_chroma(chunks)
+    documents = load_documents()
+    chunks = split_documents(documents)
+    add_to_chroma(chunks)
 
 def load_documents():
     # load documents from source ontlo loader object
@@ -47,6 +47,28 @@ def add_to_chroma(chunks: list[Document]):
         persist_directory=CHROMA_PATH,
         embedding_function=get_embedding_function()
     )
+
+    # calculate page IDs
+    chunks_with_ids = calculate_chunk_ids(chunks)
+
+    # add or update the documents
+    existing_items = db.get(include=[])
+    existing_ids = set(existing_items["ids"])
+    print(f"Number of existing documents in DB: {len(existing_ids)}")
+
+    # Only add documents that don't exist in the DB
+    new_chunks = []
+    for chunk in chunks_with_ids:
+        if chunk.metadata["id"] not in existing_ids:
+            new_chunks.append(chunk)
+
+    if len(new_chunks):
+        print(f"Adding new documents: {len(new_chunks)}")
+        new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
+        db.add_documents(new_chunks, ids=new_chunk_ids)
+        db.persist()
+    else:
+        print("✅ No new documents to add")
 
 def calculate_chunk_ids(chunks):
     # stamp each document chunk with unique identifier
