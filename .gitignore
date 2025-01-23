@@ -1,1 +1,36 @@
 *.docx
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignore virtual environment folder (replace 'myenv' with your actual env folder name)
+myenv/
+venv/
+ENV/
+env/
+
+# Ignore IDE/editor folders and files (common ones)
+.idea/
+.vscode/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Python distribution files
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Ignore pytest cache
+.cache/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore the virtualenv dependency list (optional)
+requirements.txt
