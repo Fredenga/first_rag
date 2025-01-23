@@ -41,3 +41,41 @@ def split_documents(documents: list[Document]):
     # split the documents into chunks
     return text_splitter.split_documents(documents)
 
+def add_to_chroma(chunks: list[Document]):
+    # define where to store vector data and the func() to convert text to embeddings
+    db = Chroma(
+        persist_directory=CHROMA_PATH,
+        embedding_function=get_embedding_function()
+    )
+
+def calculate_chunk_ids(chunks):
+    # stamp each document chunk with unique identifier
+    last_page_id = None
+    current_chunk_index = 0
+
+    for chunk in chunks:
+        source = chunk.metadata.get("source")
+        page = chunk.metadata.get("page")
+
+        current_page_id = f"{source}:{page}"
+        # if the page ID is the same as the last one, increment the index
+        if current_page_id == last_page_id:
+            current_chunk_index += 1
+        else:
+            current_chunk_index = 0
+
+        # Calculate the Chunk ID
+        chunk_id = f"{current_page_id}:{current_chunk_index}"
+        last_page_id = current_page_id
+
+        # Add it to the page metadata
+        chunk.metadata["id"] = chunk_id
+
+    return chunks
+
+def clear_database():
+    if os.path.exists(CHROMA_PATH):
+        shutil.rmtree(CHROMA_PATH)
+
+if __name__ == "__main__":
+    main()
