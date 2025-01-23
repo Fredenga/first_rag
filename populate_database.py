@@ -26,9 +26,18 @@ def main():
     # add_to_chroma(chunks)
 
 def load_documents():
+    # load documents from source ontlo loader object
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
     return document_loader.load()
 
 def split_documents(documents: list[Document]):
-    pass
+    # create splitter object with info
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=800,
+        chunk_overlap=80,
+        length_function=len,
+        is_separator_regex=False
+    )
+    # split the documents into chunks
+    return text_splitter.split_documents(documents)
 
