@@ -1,6 +1,8 @@
 from chunk_vector_store import ChunkVectorStore as cvs
 from langchain.prompts import PromptTemplate
 from langchain_community.chat_models import ChatOllama
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
 
 class Rag: 
     vector_store = None
@@ -46,4 +48,12 @@ class Rag:
         )
 
     def augment(self):
-        pass
+        self.chain = (
+            {
+                "context": self.retriever,
+                "question": RunnablePassthrough()
+            }
+            | self.prompt
+            | self.model
+            | StrOutputParser
+        )
