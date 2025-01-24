@@ -1,5 +1,7 @@
 import streamlit as st
 import tempfile
+import time
+import os
 
 def process_file():
     # Ensure "messages" is initialized as an empty list if it doesn't exist
@@ -11,6 +13,11 @@ def process_file():
         with tempfile.NamedTemporaryFile(delete=False) as tf:
             tf.write(file.getbuffer())
             file_path = tf.name
+        
+        with st.session_state["feeder_spinner"], st.spinner("Uploading the document"):
+            time.sleep(3)
+
+        os.remove(file_path)
 
 def display_messages():
     # Display the stored messages
@@ -57,6 +64,8 @@ def main():
         label_visibility="collapsed",
         accept_multiple_files=True
     )
+
+    st.session_state["feeder_spinner"] = st.empty
     
     # Display existing messages
     display_messages()
