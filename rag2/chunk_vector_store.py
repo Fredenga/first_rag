@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.utils import filter_complex_metadata
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import chroma
 from langchain_community.embeddings import fastembed
 
 class ChunkVectorStore:
@@ -18,5 +18,8 @@ class ChunkVectorStore:
 
         return chunks
 
-    def store_to_vector_database(self):
-        pass
+    def store_to_vector_database(self, chunks):
+        return chroma.Chroma.from_documents(
+            documents=chunks, 
+            embedding=fastembed.FastEmbedEmbeddings()
+        )
