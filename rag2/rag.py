@@ -34,8 +34,11 @@ class Rag:
         self.augment()
 
 
-    def ask(self, prompt: str):
-        pass
+    def ask(self, query: str):
+        if not self.chain:
+            print("Upload the document first to set the context of conversation")
+        
+        return self.chain.invoke(query)
 
     def set_retriever(self):
         self.retriever = self.vector_store.as_retriever(
