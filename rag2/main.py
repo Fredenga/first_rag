@@ -2,6 +2,7 @@ import streamlit as st
 import tempfile
 import time
 import os
+from rag import Rag
 
 def process_file():
     # Ensure "messages" is initialized as an empty list if it doesn't exist
@@ -15,7 +16,7 @@ def process_file():
             file_path = tf.name
         
         with st.session_state["feeder_spinner"], st.spinner("Uploading the document"):
-            time.sleep(3)
+            st.session_state["assistant"].feed(file_path)
 
         os.remove(file_path)
 
@@ -38,15 +39,13 @@ def process_input():
         st.session_state["messages"].append({"role": "user", "content": prompt})
     
     # Generate assistant response
-    response = generate_response()
+    response = st.session_state["assistant"].ask(prompt)
     with st.chat_message("assistant"):
         st.markdown(response)
     
     # Add the assistant's response to session state
     st.session_state["messages"].append({"role": "assistant", "content": response})
 
-def generate_response():
-    return "Hello, how can I help you today..."
 
 def main():
     st.title("Document")
@@ -55,6 +54,7 @@ def main():
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
 
+    st.session_state["assistant"] = Rag()
     # File uploader
     st.file_uploader(
         "Upload the document",
