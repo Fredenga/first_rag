@@ -1,6 +1,5 @@
 import streamlit as st
 import tempfile
-import time
 import os
 from rag import Rag
 
@@ -49,12 +48,12 @@ def process_input():
 
 def main():
     st.title("Document")
+    st.session_state["assistant"] = Rag()
 
     # Initialize "messages" in session state if not already initialized
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
 
-    st.session_state["assistant"] = Rag()
     # File uploader
     st.file_uploader(
         "Upload the document",
@@ -65,7 +64,7 @@ def main():
         accept_multiple_files=True
     )
 
-    st.session_state["feeder_spinner"] = st.empty
+    st.session_state["feeder_spinner"] = st.empty()
     
     # Display existing messages
     display_messages()
