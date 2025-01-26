@@ -1,4 +1,4 @@
-from langchain.vectorstores import Qdrant
+from langchain_community.vectorstores import Qdrant
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter

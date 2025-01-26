@@ -34,3 +34,6 @@ build/
 
 # Ignore the virtualenv dependency list (optional)
 requirements.txt
+
+# Ignore docker volumes
+volumes
