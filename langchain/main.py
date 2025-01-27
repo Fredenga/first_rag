@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_mistralai import ChatMistralAI
-
+from langchain.prompts import ChatPromptTemplate
 import os
 
 load_dotenv()
@@ -44,3 +44,14 @@ while True:
     
 print("-----------Message History-----------")
 print(chat_history)
+
+
+
+template = "lets discuss a topic about {topic}"
+prompt_template = ChatPromptTemplate.from_template(template)
+
+print("-----------Prompt from Template-----------")
+
+prompt = prompt_template.invoke({"topic": "cities"})
+res = model.invoke(prompt)
+print(res.content)
