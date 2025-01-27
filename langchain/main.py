@@ -2,7 +2,9 @@ from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_mistralai import ChatMistralAI
 from langchain.prompts import ChatPromptTemplate
+from langchain.schema.output_parser import StrOutputParser
 import os
+
 
 load_dotenv()
 
@@ -45,13 +47,22 @@ while True:
 print("-----------Message History-----------")
 print(chat_history)
 
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are an expert who is well versed in {topic}"),
+        ("human", "Tell me about {stuff}")
+    ]
+)
+# CHAINING: chain the output of a prompt to the input of a model Langchain Expression Language
+# Parallel (run tasks in parallel)
+# Branching (use conditional branching)
 
+chain = prompt_template | model | StrOutputParser()
+#StrOutputParser removes metadata and returns only the needed text
 
-template = "lets discuss a topic about {topic}"
-prompt_template = ChatPromptTemplate.from_template(template)
+res = chain.invoke({
+    "topic": "animals",
+    "stuff": "rabbits"
+})
 
-print("-----------Prompt from Template-----------")
-
-prompt = prompt_template.invoke({"topic": "cities"})
-res = model.invoke(prompt)
-print(res.content)
+print(res)
