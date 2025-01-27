@@ -30,7 +30,7 @@ db = Qdrant(
     collection_name=collection_name
 )
 
-query = "What are the limitations of GPT4"
+query = "How well does GPT4 perform when it comes to professional and academic exams?"
 
 docs = db.similarity_search_with_score(query=query, k=5)
 

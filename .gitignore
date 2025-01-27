@@ -5,6 +5,9 @@
 *.pyd
 __pycache__/
 
+# Ignore environment variables
+*.env
+
 # Ignore virtual environment folder (replace 'myenv' with your actual env folder name)
 myenv/
 venv/
