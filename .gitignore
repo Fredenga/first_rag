@@ -8,6 +8,9 @@ __pycache__/
 # Ignore environment variables
 *.env
 
+# Ignore configuration files
+config/
+
 # Ignore virtual environment folder (replace 'myenv' with your actual env folder name)
 myenv/
 venv/

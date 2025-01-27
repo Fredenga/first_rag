@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_mistralai import ChatMistralAI
+
 import os
 
 load_dotenv()
