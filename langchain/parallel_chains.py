@@ -1,7 +1,7 @@
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from main import load_model, define_template
-from langchain.schema.runnable import RunnableLambda, RunnableSequence, RunnableParallel
+from langchain.schema.runnable import RunnableLambda, RunnableParallel
 from langchain.schema.output_parser import StrOutputParser
 
 model = load_model()
