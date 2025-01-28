@@ -30,5 +30,7 @@ def use_chaining():
     response = chain.invoke({"topic": "companies", "content": "Amazon"})
     print(response)
 
+  
+
 if __name__ == "__main__":
     use_chaining()
