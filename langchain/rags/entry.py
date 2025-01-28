@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from langchain_mistralai import MistralAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Qdrant
 
 load_dotenv()
 
@@ -36,3 +37,13 @@ def load_embeddings():
     return embeddings
 
 embeddings = load_embeddings()
+
+url = "http://localhost:6333"
+collection_name = "pdf_db"
+
+x = Qdrant.from_documents(
+    docs,
+    embeddings,
+    url = url,
+    collection_name = collection_name
+)
