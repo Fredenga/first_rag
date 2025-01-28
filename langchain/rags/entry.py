@@ -4,6 +4,7 @@ from langchain_mistralai import MistralAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Qdrant
+from qdrant_client import QdrantClient
 
 load_dotenv()
 
@@ -41,9 +42,34 @@ embeddings = load_embeddings()
 url = "http://localhost:6333"
 collection_name = "pdf_db"
 
-x = Qdrant.from_documents(
-    docs,
-    embeddings,
-    url = url,
-    collection_name = collection_name
-)
+def feed_database():
+    Qdrant.from_documents(
+        docs,
+        embeddings,
+        url = url,
+        collection_name = collection_name
+    )
+    print("Data vectorized successfully")
+
+def query_database():
+    client = QdrantClient(
+        url=url,
+        prefer_grpc=False
+    )
+
+    db = Qdrant(
+        client=client,
+        embeddings=embeddings,
+        collection_name=collection_name
+    )
+
+    query = "Explain the concept of concurrency control and provide an example"
+
+    docs = db.similarity_search_with_score(query=query, k=5, score_threshold=0.5)
+    
+    for i in docs:
+        doc, score = i
+        print(f"score: {score},\n content: {doc.page_content},\n metadata: {doc.metadata}\n")
+
+if __name__ == "__main__":
+    feed_database()
