@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
-from langchain_mistralai import MistralAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
 
@@ -31,10 +31,15 @@ docs = text_splitter.split_documents(documents=documents)
 import os
 
 def load_embeddings():
-    api_key = os.getenv("MISTRAL_API_KEY")
+    model_name = "BAAI/bge-large-en"
+    model_kwargs = {"device": "cpu"}
+    encode_kwargs = {'normalize_embeddings': False}
 
-    embeddings = MistralAIEmbeddings(api_key=api_key)
-
+    embeddings = HuggingFaceEmbeddings(
+        model_name=model_name,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs
+    )
     return embeddings
 
 embeddings = load_embeddings()
@@ -51,7 +56,7 @@ def feed_database():
     )
     print("Data vectorized successfully")
 
-def query_database():
+def query_database(search_type, search_kwargs):
     client = QdrantClient(
         url=url,
         prefer_grpc=False
@@ -63,11 +68,19 @@ def query_database():
         collection_name=collection_name
     )
 
-    query = "Explain the concept of concurrency control and provide an example"
+    query = "Explain the concept of concurrency control"
+    retriever = db.as_retriever()
+    docs1 = db.similarity_search_with_score(query=query, k=5, score_threshold=0.5)
 
-    docs = db.similarity_search_with_score(query=query, k=5, score_threshold=0.5)
+    docs2 = db.max_marginal_relevance_search(
+        query, embeddings, k=3, fetch_k=20, lambda_mult=0.5
+    )
+
+    docs3 = db.similarity_search(
+        query, embeddings, k=4
+    )
     
-    for i in docs:
+    for i in docs1:
         doc, score = i
         print(f"score: {score},\n content: {doc.page_content},\n metadata: {doc.metadata}\n")
 

@@ -1,0 +1,18 @@
+CharacterTextSplitter
+Split text into chunks based on a specified number of characters.
+Useful for consistent chunk sizes regardless of content structure.
+
+SentenceTransformerTextSplitter
+Split documents based o sentences ensuring chunks end at sentence boundaries.
+Ideal for maintaining semantic coherence within chunks.
+
+TokenTextSplitter
+Splits documents into chunks based on tokens (words or sub-words) using tokenizers like GPT-2
+Useful for transformer models with strict token limits
+
+RecursiveCharacterTextSplitter
+Splits documents at natural boundaries (sentences, paragraphs) within character limit.
+Balances between maintaining coherence and adhering to character limits.
+
+CustomeTextSplitter
+Custom made to split documents according to specified conditions.
