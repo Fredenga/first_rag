@@ -1,12 +1,19 @@
 import os
+import sys
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
+from langchain_core.messages import HumanMessage, SystemMessage
 from qdrant_client import QdrantClient
 
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, parent_dir)
+from main import load_model
+
 load_dotenv()
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(current_dir, "data", "Database_Systems.pdf")
@@ -46,6 +53,7 @@ embeddings = load_embeddings()
 
 url = "http://localhost:6333"
 collection_name = "pdf_db"
+query = "Explain the concept of concurrency control"
 
 def feed_database():
     Qdrant.from_documents(
@@ -56,7 +64,7 @@ def feed_database():
     )
     print("Data vectorized successfully")
 
-def query_database(search_type, search_kwargs):
+def query_database():
     client = QdrantClient(
         url=url,
         prefer_grpc=False
@@ -68,8 +76,6 @@ def query_database(search_type, search_kwargs):
         collection_name=collection_name
     )
 
-    query = "Explain the concept of concurrency control"
-    retriever = db.as_retriever()
     docs1 = db.similarity_search_with_score(query=query, k=5, score_threshold=0.5)
 
     docs2 = db.max_marginal_relevance_search(
@@ -83,6 +89,30 @@ def query_database(search_type, search_kwargs):
     for i in docs1:
         doc, score = i
         print(f"score: {score},\n content: {doc.page_content},\n metadata: {doc.metadata}\n")
+
+    return docs1
+
+def query_model():
+    relevant_docs = query_database()
+    combined_input = (
+        "Here are some documents that might help you answer the questions: "
+        + query
+        + "\nRelevant Documents:\n"
+        + "\n\n".join([doc.page_content for doc in relevant_docs])
+    )
+
+    model = load_model()
+    messages = [
+        SystemMessage(content="You are a helpful assistant"),
+        HumanMessage(content=combined_input)
+    ]
+
+    result = model.invoke(messages)
+    print("\n--- Generated Response ---")
+    print(result)
+    print("\nContent only")
+    print(result.content)
+
 
 if __name__ == "__main__":
     feed_database()
