@@ -7,7 +7,7 @@ from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from qdrant_client import QdrantClient
-from langchain_qdrant import Qdrant
+from langchain_qdrant import Qdrant, QdrantVectorStore
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 # Updated import to Pydantic v2 directly
@@ -178,29 +178,50 @@ def chat_with_model():
         chat_history.append(SystemMessage(content=result['answer']))
 
 web_url = "https://en.wikipedia.org/wiki/MySQL"
+new_collection_name = "webdb"
 
-def web_scrape():
+def web_scrape_query():
     # Define new collection and connection
-    new_collection_name = "webdb"
-    db = Qdrant(
+    new_db = QdrantVectorStore(
         client=client,
-        embeddings=embeddings,
+        embedding=embeddings,
         collection_name=new_collection_name
     )
-
-    # Vectorize web-scraped data
-
-def vectorize_web_scraped_data():
-    new_loader = WebBaseLoader(web_url)
-    new_documents = new_loader.load()
-    new_text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+    new_query = "Milestones in the development of MySQL"
+    new_docs = new_db.similarity_search_with_score(
+        query=new_query,
+        score_threshold=0.3
     )
-    new_docs = new_text_splitter.split_documents(new_documents)
-    print(new_docs[0].page_content)
+   
+    for doc in new_docs:
+        print(f"""
+            RELEVANT DOCUMENTS\n
+            Document: {doc[0].page_content}
+        """)
+    
 
+# Vectorize web-scraped data
+def vectorize_web_scraped_data():
+    try:
+        new_loader = WebBaseLoader(web_url)
+        new_documents = new_loader.load()
+        new_text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50
+        )
+        new_docs = new_text_splitter.split_documents(new_documents)
+
+        QdrantVectorStore.from_documents(
+            new_docs,
+            embeddings,
+            url=url,
+            collection_name=new_collection_name
+        )
+        print("Data vectorized successfully")
+    except Exception as e:
+        print(e)
+    
         
 
 if __name__ == "__main__":
-    vectorize_web_scraped_data()
+    web_scrape_query()
