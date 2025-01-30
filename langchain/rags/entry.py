@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -177,7 +177,8 @@ def chat_with_model():
         chat_history.append(HumanMessage(content=word))
         chat_history.append(SystemMessage(content=result['answer']))
 
-
+def web_scrape():
+    pass
         
 
 if __name__ == "__main__":

@@ -38,9 +38,6 @@ build/
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints
 
-# Ignore the virtualenv dependency list (optional)
-requirements.txt
-
 # Ignore docker volumes
 volumes
 langchain/parallel_chains.py
