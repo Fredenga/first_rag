@@ -153,14 +153,8 @@ def chat_with_model():
             ("human", "{input}"),
         ]
     )
-    # Create a chain to combine documents for question answering
-    # `create_stuff_documents_chain` feeds all retrieved context into the LLM
-    # Model and Prompt
-    question_answer_chain = create_stuff_documents_chain(model, qa_prompt)
 
-    # Create a retrieval chain that combines the history-aware retriever and question answering
-    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-    
+def continual_chat():
     print("Start chatting with the AI. Type exit to end the conversation")
     chat_history = []
     while True:
@@ -181,4 +175,4 @@ def chat_with_model():
         
 
 if __name__ == "__main__":
-    query_model()
+    query_database()
