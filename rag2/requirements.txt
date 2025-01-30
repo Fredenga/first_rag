@@ -1,1 +1,6 @@
-streamlit==1.18.0
+langchain
+langchain-community
+pypdf
+langchain-qdrant
+qdrant_client
+streamlit
