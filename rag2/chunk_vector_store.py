@@ -1,10 +1,17 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.utils import filter_complex_metadata
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import chroma
 from langchain_community.embeddings import fastembed
-
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
 class ChunkVectorStore:
+    def __init__(self):
+        self.__url = "http://localhost:6333"
+        self.__collection_name = "doctors_db"
+        self.vector_store =  QdrantClient(
+            url=self.__url,
+            prefer_grpc=False
+        )
 
     def split_into_chunks(self, file_path):
         # Load PDF document using PyPDFLoader
@@ -26,10 +33,14 @@ class ChunkVectorStore:
 
     def store_to_vector_database(self, chunks):
         # Store the chunks into the Chroma vector database using FastEmbed embeddings
-        vector_store = chroma.Chroma.from_documents(
+        
+        QdrantVectorStore.from_documents(
             documents=chunks,
-            embedding=fastembed.FastEmbedEmbeddings()
+            embedding=fastembed.FastEmbedEmbeddings(),
+            url=self.__url,
+            collection_name=self.__collection_name
         )
         
+        
         # Return the vector store object for further usage (e.g., querying)
-        return vector_store
+        return self.vector_store
