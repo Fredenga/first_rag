@@ -177,9 +177,30 @@ def chat_with_model():
         chat_history.append(HumanMessage(content=word))
         chat_history.append(SystemMessage(content=result['answer']))
 
+web_url = "https://en.wikipedia.org/wiki/MySQL"
+
 def web_scrape():
-    pass
+    # Define new collection and connection
+    new_collection_name = "webdb"
+    db = Qdrant(
+        client=client,
+        embeddings=embeddings,
+        collection_name=new_collection_name
+    )
+
+    # Vectorize web-scraped data
+
+def vectorize_web_scraped_data():
+    new_loader = WebBaseLoader(web_url)
+    new_documents = new_loader.load()
+    new_text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50
+    )
+    new_docs = new_text_splitter.split_documents(new_documents)
+    print(new_docs[0].page_content)
+
         
 
 if __name__ == "__main__":
-    chat_with_model()
+    vectorize_web_scraped_data()
