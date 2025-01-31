@@ -8,10 +8,16 @@ class ChunkVectorStore:
     def __init__(self):
         self.__url = "http://localhost:6333"
         self.__collection_name = "books_db"
-        self.vector_store =  QdrantClient(
+        client =  QdrantClient(
             url=self.__url,
             prefer_grpc=False
         )
+        self.vector_store = QdrantVectorStore(
+            client=client,
+            embedding=fastembed.FastEmbedEmbeddings(),
+            collection_name=self.__collection_name
+        )
+
 
     def split_into_chunks(self, file_path):
         # Load PDF document using PyPDFLoader
