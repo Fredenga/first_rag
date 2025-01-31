@@ -187,7 +187,7 @@ def web_scrape_query():
         embedding=embeddings,
         collection_name=new_collection_name
     )
-    new_query = "Milestones in the development of MySQL"
+    new_query = "Name the board of directors"
     new_docs = new_db.similarity_search_with_score(
         query=new_query,
         score_threshold=0.3
@@ -250,4 +250,4 @@ def use_firecrawl():
         print(e)    
 
 if __name__ == "__main__":
-    use_firecrawl()
+    web_scrape_query()

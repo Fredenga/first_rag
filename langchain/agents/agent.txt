@@ -1,0 +1,7 @@
+LLM provided with a specific prompt to guide its behavior (state machine)
+Action state: perform an action.
+Observation: 
+Thought: Plan upcoming actions to be done next
+
+Tool: code that provides an agent with additional functionality 
+(e.g search the internet, execute code, query database)
