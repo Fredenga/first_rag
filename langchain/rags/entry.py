@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, FireCrawlLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -220,8 +220,34 @@ def vectorize_web_scraped_data():
         print("Data vectorized successfully")
     except Exception as e:
         print(e)
-    
-        
+
+firecrawl_api_key = os.getenv("FIRECRAWL_API_KEY")
+def use_firecrawl():
+    try:
+        fire_loader = FireCrawlLoader(
+            api_key=firecrawl_api_key, 
+            url="https://en.wikipedia.org/wiki/JPMorgan_Chase", 
+            mode="scrape"
+        )   
+        fire_docs = fire_loader.load()
+        print("finished crawling the website")
+
+        for doc in fire_docs:
+            for key, value in doc.metadata.items():
+                if isinstance(value, list):
+                    doc.metadata[key] = ', '.join(map(str, value))
+
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+        split_docs = text_splitter.split_documents(fire_docs)
+        QdrantVectorStore.from_documents(
+                split_docs,
+                embeddings,
+                url=url,
+                collection_name=new_collection_name
+        )
+        print("Data vectorized successfully")
+    except Exception as e:
+        print(e)    
 
 if __name__ == "__main__":
-    web_scrape_query()
+    use_firecrawl()
