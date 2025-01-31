@@ -7,7 +7,7 @@ from qdrant_client import QdrantClient
 class ChunkVectorStore:
     def __init__(self):
         self.__url = "http://localhost:6333"
-        self.__collection_name = "doctors_db"
+        self.__collection_name = "books_db"
         self.vector_store =  QdrantClient(
             url=self.__url,
             prefer_grpc=False
