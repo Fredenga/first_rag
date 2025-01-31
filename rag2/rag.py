@@ -31,14 +31,14 @@ class Rag:
         self.vector_store = self.cvs_obj.store_to_vector_database(chunks)
 
         self.set_retriever()
-        self.augment()
 
 
     def ask(self, query: str):
+        self.augment()
         if not self.chain:
-            print("Upload the document first to set the context of conversation")
+            raise Exception("Upload the document first to set the context of conversation")
         
-        # return self.chain.invoke(query)
+        return self.chain.invoke(query)
 
     def set_retriever(self):
         self.retriever = self.vector_store.as_retriever(
@@ -48,7 +48,7 @@ class Rag:
                 "score_threshold": 0.5
 
             }
-        )
+        ) 
 
     def augment(self):
         self.chain = (
@@ -58,5 +58,5 @@ class Rag:
             }
             | self.prompt
             | self.model
-            | StrOutputParser
+            | StrOutputParser()
         )
